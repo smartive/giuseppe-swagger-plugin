@@ -1,0 +1,41 @@
+{
+  "name": "giuseppe-swagger-plugin",
+  "version": "0.0.1",
+  "description": "Swagger documentation generator",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "clean": "del-cli ./build ./coverage",
+    "build": "npm run clean && tsc -p ./config/tsconfig.build.json",
+    "develop": "npm run clean && tsc -p .",
+    "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
+    "test": "npm run lint && npm run clean && jest -c ./jest.json",
+    "test:watch": "npm run clean && jest -c ./jest.json --watch",
+    "typedoc": "del-cli ./docs && typedoc --ignoreCompilerErrors --out ./docs --mode file --tsconfig ./config/tsconfig.build.json ./src/"
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "GIT URL"
+  },
+  "engines": {
+    "node": ">=7",
+    "npm": "*"
+  },
+  "author": "Nicola Marcacci Rossi <nicolamr@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "giuseppe": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^20.0.6",
+    "del-cli": "^1.1.0",
+    "jest": "^20.0.4",
+    "ts-jest": "^20.0.7",
+    "tslint": "^5.5.0",
+    "tslint-config-airbnb": "^5.2.1",
+    "tsutils": "^2.8.0",
+    "typedoc": "^0.8.0",
+    "typescript": "^2.4.2"
+  }
+}
