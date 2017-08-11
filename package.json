@@ -1,6 +1,6 @@
 {
-  "name": "giuseppe-swagger-plugin",
-  "version": "0.0.1",
+  "name": "@smartive/giuseppe-swagger-plugin",
+  "version": "0.0.0-development",
   "description": "Swagger documentation generator",
   "main": "index.js",
   "typings": "index.d.ts",
