@@ -177,42 +177,55 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
             return;
         }
 
-        const properties = {};
-        const required: string[] = [];
         const toRegister: Function[] = [];
-        let description;
+        const definition = {
+            id: type.name,
+        } as any;
 
         const objectData: SwaggerObjectData = getMetadata(type.prototype);
         if (objectData) {
-            description = objectData.description;
+            definition.description = objectData.description;
 
-            for (const name of Object.keys(objectData.fields)) {
-                if (!objectData.fields) {
-                    continue;
+            if (objectData.oneOf) {
+                definition.oneOf = objectData.oneOf.map(type => ({
+                    $ref: `#/definitions/${type.name}`,
+                }));
+
+                objectData.oneOf.forEach(type => toRegister.push(type));
+            } else {
+                definition.type = 'object';
+
+                if (objectData.additionalPropertiesType) {
+                    definition.additionalProperties = {
+                        $ref: `#/definitions/${objectData.additionalPropertiesType.name}`,
+                    };
+                    toRegister.push(objectData.additionalPropertiesType);
                 }
 
-                const field = objectData.fields[name];
+                if (objectData.fields && Object.keys(objectData.fields).length) {
+                    definition.properties = {};
 
+                    for (const name of Object.keys(objectData.fields)) {
 
-                properties[name] = this.buildField(name, field.type, type);
+                        const field = objectData.fields[name];
 
-                if (field.type) {
-                    toRegister.push(field.type);
-                }
+                        definition.properties[name] = this.buildField(name, field.type, type);
 
-                if (field.required) {
-                    required.push(name);
+                        if (field.type) {
+                            toRegister.push(field.type);
+                        }
+
+                        if (field.required) {
+                            if (!definition.required) {
+                                definition.required = [];
+                            }
+                            definition.required.push(name);
+                        }
+                    }
                 }
             }
-        }
 
-        const definition: JsonSchemaObject = {
-            description,
-            properties,
-            required,
-            type: 'object',
-            id: type.name,
-        };
+        }
 
         definitions[type.name] = definition;
 

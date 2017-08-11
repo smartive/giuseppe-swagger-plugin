@@ -90,7 +90,7 @@ export interface JsonSchemaObject {
     patternProperties?: {
         [pattern: string]: JsonSchema;
     };
-    required: string[];
+    required?: string[];
     additionalProperties?: boolean;
 }
 
@@ -158,6 +158,8 @@ export interface SwaggerObjectData {
     fields?: {
         [name: string]: SwaggerFieldData;
     };
+    additionalPropertiesType?: Function;
+    oneOf?: Function[];
 }
 
 export interface SwaggerFieldData {

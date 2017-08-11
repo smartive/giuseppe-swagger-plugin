@@ -6,12 +6,49 @@ Object {
     "application/json",
   ],
   "definitions": Object {
+    "A": Object {
+      "id": "A",
+      "properties": Object {
+        "x": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "AdditionalProperties": Object {
+      "additionalProperties": Object {
+        "$ref": "#/definitions/C",
+      },
+      "id": "AdditionalProperties",
+      "type": "object",
+    },
+    "B": Object {
+      "id": "B",
+      "properties": Object {
+        "y": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
+    "C": Object {
+      "id": "C",
+      "properties": Object {
+        "z": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
+    },
     "Model": Object {
       "description": "A model",
       "id": "Model",
       "properties": Object {
         "a": Object {
           "type": "string",
+        },
+        "additionalProperties": Object {
+          "$ref": "#/definitions/AdditionalProperties",
         },
         "b": Object {
           "type": "number",
@@ -31,11 +68,25 @@ Object {
           },
           "type": "array",
         },
+        "oneOf": Object {
+          "$ref": "#/definitions/OneOf",
+        },
       },
       "required": Array [
         "a",
       ],
       "type": "object",
+    },
+    "OneOf": Object {
+      "id": "OneOf",
+      "oneOf": Array [
+        Object {
+          "$ref": "#/definitions/A",
+        },
+        Object {
+          "$ref": "#/definitions/B",
+        },
+      ],
     },
     "Other": Object {
       "description": "Another model",
@@ -45,7 +96,6 @@ Object {
           "type": "boolean",
         },
       },
-      "required": Array [],
       "type": "object",
     },
   },

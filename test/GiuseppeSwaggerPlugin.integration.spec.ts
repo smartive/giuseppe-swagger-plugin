@@ -46,6 +46,31 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
             x: boolean;
         }
 
+        class A {
+            @SwaggerField()
+            x: string;
+        }
+        class B {
+            @SwaggerField()
+            y: string;
+        }
+
+        @SwaggerObject({
+            oneOf: [A, B],
+        })
+        class OneOf {}
+
+
+        class C {
+            @SwaggerField()
+            z: string;
+        }
+
+        @SwaggerObject({
+            additionalPropertiesType: C,
+        })
+        class AdditionalProperties { }
+
         @SwaggerObject({
             description: 'A model',
         })
@@ -72,6 +97,16 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
                 type: Other
             })
             e: Other[];
+
+            @SwaggerField({
+                type: OneOf
+            })
+            oneOf: OneOf;
+
+            @SwaggerField({
+                type: AdditionalProperties
+            })
+            additionalProperties: AdditionalProperties
         }
 
         @Controller()
