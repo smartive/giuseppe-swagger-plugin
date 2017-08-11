@@ -64,6 +64,13 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
         class C {
             @SwaggerField()
             z: string;
+
+            @SwaggerField({
+                schema: {
+                    oneOf: ['a', 'b']
+                }
+            })
+            y: string;
         }
 
         @SwaggerObject({

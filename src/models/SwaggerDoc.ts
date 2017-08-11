@@ -135,7 +135,7 @@ export interface JsonSchemaArray {
 
 export interface JsonSchemaOneOf {
     description?: string;
-    oneOf: JsonSchema[];
+    oneOf: any[];
 }
 
 export interface JsonSchemaEnum {

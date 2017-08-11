@@ -11,7 +11,6 @@ import {
   Handler,
   JsonSchema,
   JsonSchemaArray,
-  JsonSchemaObject,
   JsonSchemaObjects,
   JsonSchemaRef,
   Parameter,
@@ -20,6 +19,7 @@ import {
   Response as JsonResponse,
   Responses,
   SwaggerDoc,
+  SwaggerFieldData,
   SwaggerObjectData,
   SwaggerParameterData,
   SwaggerRouteData,
@@ -209,7 +209,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
 
                         const field = objectData.fields[name];
 
-                        definition.properties[name] = this.buildField(name, field.type, type);
+                        definition.properties[name] = this.buildField(name, field, type);
 
                         if (field.type) {
                             toRegister.push(field.type);
@@ -232,7 +232,11 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
         toRegister.forEach(type => this.registerType(definitions, type));
     }
 
-    private buildField(name: string, type: Function | undefined, objectType: Function): JsonSchema {
+    private buildField(name: string, field: SwaggerFieldData, objectType: Function): JsonSchema {
+        if (field.schema) {
+            return field.schema;
+        }
+
         const baseType: Function = Reflect.getMetadata('design:type', objectType.prototype, name);
         const primitiveType = getPrimitiveType(baseType);
         if (primitiveType) {
@@ -241,8 +245,8 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
             } as any;
         }
 
-        if (type) {
-            return this.buildTypeSchema(baseType, type);
+        if (field.type) {
+            return this.buildTypeSchema(baseType, field.type);
         }
 
         throw new Error('Invalid field.');
