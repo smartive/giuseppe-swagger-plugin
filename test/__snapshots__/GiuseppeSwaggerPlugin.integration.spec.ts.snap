@@ -34,6 +34,12 @@ Object {
     "C": Object {
       "id": "C",
       "properties": Object {
+        "y": Object {
+          "oneOf": Array [
+            "a",
+            "b",
+          ],
+        },
         "z": Object {
           "type": "string",
         },
