@@ -1,7 +1,6 @@
 # giuseppe-swagger-plugin
 
 This is a plugin for [giuseppe](http://giuseppe.smartive.ch).
-Swagger documentation generator
 
 ##### A bunch of badges
 
