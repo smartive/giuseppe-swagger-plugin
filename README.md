@@ -5,7 +5,7 @@ This is a plugin for [giuseppe](http://giuseppe.smartive.ch).
 ##### A bunch of badges
 
 [![Build Status](https://travis-ci.org/smartive/giuseppe-swagger-plugin.svg)](https://travis-ci.org/smartive/giuseppe-swagger-plugin)
-[![npm](https://img.shields.io/npm/v/giuseppe-swagger-plugin.svg?maxAge=3600)](https://www.npmjs.com/package/giuseppe-swagger-plugin)
+[![npm](https://img.shields.io/npm/v/@smartive/giuseppe-swagger-plugin.svg?maxAge=3600)](https://www.npmjs.com/package/@smartive/giuseppe-swagger-plugin)
 [![Coverage status](https://img.shields.io/coveralls/smartive/giuseppe-swagger-plugin.svg?maxAge=3600)](https://coveralls.io/github/smartive/giuseppe-swagger-plugin)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 [![Greenkeeper badge](https://badges.greenkeeper.io/smartive/giuseppe-swagger-plugin.svg)](https://greenkeeper.io/)
