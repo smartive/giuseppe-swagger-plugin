@@ -7,7 +7,7 @@ export function SwaggerParam(swaggerData: SwaggerParameterData): ParameterDecora
         const meta = new ControllerMetadata(target);
         const param = meta.parameters(propertyKey).find(p => p.index === parameterIndex);
         if (!param) {
-            throw new Error('SwaggerParam must also be a Giuseppe param');
+            throw new Error(`SwaggerParam ${propertyKey}:${parameterIndex} must also be a Giuseppe param`);
         }
         (param as any).swagger = swaggerData;
     };

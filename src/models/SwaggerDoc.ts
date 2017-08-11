@@ -27,6 +27,7 @@ export interface Parameter {
     enum?: string[];
     default?: string | number;
     minimum?: number;
+    maximum?: number;
     schema?: JsonSchemaArray | JsonSchemaRef;
 }
 
@@ -146,6 +147,10 @@ export interface SwaggerParameterData {
     description: string;
     default?: any;
     type?: Function;
+    deprecated?: boolean;
+    minimum?: number;
+    maximum?: number;
+    enum: any[];
 }
 
 export interface SwaggerObjectData {

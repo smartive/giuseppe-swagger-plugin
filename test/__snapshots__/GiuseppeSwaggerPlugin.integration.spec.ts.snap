@@ -60,6 +60,16 @@ Object {
         "description": "A route",
         "parameters": Array [
           Object {
+            "enum": Array [
+              "a",
+              "b",
+              "c",
+            ],
+            "in": "query",
+            "name": "othername",
+            "type": "string",
+          },
+          Object {
             "in": "header",
             "name": "f",
             "type": "string",
@@ -93,8 +103,11 @@ Object {
           },
           Object {
             "default": 10,
+            "deprecated": true,
             "description": "Parameter b",
             "in": "query",
+            "maximum": 10,
+            "minimum": 0,
             "name": "b",
             "type": "number",
           },

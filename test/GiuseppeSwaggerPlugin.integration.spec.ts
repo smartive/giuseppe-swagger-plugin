@@ -93,6 +93,9 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
                 @SwaggerParam({
                     default: 10,
                     description: 'Parameter b',
+                    deprecated: true,
+                    minimum: 0,
+                    maximum: 10
                 })
                 @Query('b')
                 b: number,
@@ -117,6 +120,12 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
 
                 @Header('f')
                 f: string,
+
+                @SwaggerParam({
+                    enum: ['a', 'b', 'c'],
+                })
+                @Query('othername')
+                g: string
             ): Model {
                 return new Model();
             }

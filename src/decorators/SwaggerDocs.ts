@@ -289,6 +289,10 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
         if (swaggerParamData) {
             param.default = swaggerParamData.default;
             param.description = swaggerParamData.description;
+            param.minimum = swaggerParamData.minimum;
+            param.maximum = swaggerParamData.maximum;
+            param.deprecated = swaggerParamData.deprecated;
+            param.enum = swaggerParamData.enum;
 
             if (swaggerParamData.type) {
                 param.schema = this.buildTypeSchema(parameter.type, swaggerParamData.type);
