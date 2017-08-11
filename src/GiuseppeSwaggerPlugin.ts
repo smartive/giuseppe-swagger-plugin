@@ -1,6 +1,6 @@
+import { SwaggerDocsRoute } from './decorators/SwaggerDocs';
 import {
     ControllerDefinitionConstructor,
-    Giuseppe,
     GiuseppePlugin,
     ParameterDefinitionConstructor,
     ReturnType,
@@ -19,7 +19,7 @@ import {
 export class GiuseppeSwaggerPlugin implements GiuseppePlugin {
     public returnTypeHandler: ReturnType<any>[] | null = null;
     public controllerDefinitions: ControllerDefinitionConstructor[] | null = null;
-    public routeDefinitions: RouteDefinitionConstructor[] | null = null;
+    public routeDefinitions: RouteDefinitionConstructor[] = [];
     public routeModificators: RouteModificatorConstructor[] | null = null;
     public parameterDefinitions: ParameterDefinitionConstructor[] | null = null;
 
@@ -27,6 +27,7 @@ export class GiuseppeSwaggerPlugin implements GiuseppePlugin {
         return this.constructor.name;
     }
 
-    public initialize(giuseppe: Giuseppe): void {
+    public initialize(): void {
+        this.routeDefinitions.push(SwaggerDocsRoute);
     }
 }

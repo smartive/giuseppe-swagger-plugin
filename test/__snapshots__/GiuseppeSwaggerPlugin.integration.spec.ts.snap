@@ -1,0 +1,126 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GiuseppeSwaggerPlugin <integration test> generates swagger docs 1`] = `
+Object {
+  "consumes": Array [
+    "application/json",
+  ],
+  "definitions": Object {
+    "Model": Object {
+      "description": "A model",
+      "id": "Model",
+      "properties": Object {
+        "a": Object {
+          "type": "string",
+        },
+        "b": Object {
+          "type": "number",
+        },
+        "c": Object {
+          "$ref": "#/definitions/Other",
+        },
+        "d": Object {
+          "items": Object {
+            "type": "number",
+          },
+          "type": "array",
+        },
+        "e": Object {
+          "items": Object {
+            "$ref": "#/definitions/Other",
+          },
+          "type": "array",
+        },
+      },
+      "required": Array [
+        "a",
+      ],
+      "type": "object",
+    },
+    "Other": Object {
+      "description": "Another model",
+      "id": "Other",
+      "properties": Object {
+        "x": Object {
+          "type": "boolean",
+        },
+      },
+      "required": Array [],
+      "type": "object",
+    },
+  },
+  "info": Object {
+    "description": "A test swagger route.",
+    "title": "Swagger",
+    "version": "1.0.0",
+  },
+  "paths": Object {
+    "/route": Object {
+      "get": Object {
+        "description": "A route",
+        "parameters": Array [
+          Object {
+            "in": "header",
+            "name": "f",
+            "type": "string",
+          },
+          Object {
+            "in": "query",
+            "name": "e",
+            "schema": Object {
+              "items": Object {
+                "$ref": "#/definitions/Model",
+              },
+              "type": "array",
+            },
+          },
+          Object {
+            "in": "query",
+            "name": "d",
+            "schema": Object {
+              "items": Object {
+                "type": "number",
+              },
+              "type": "array",
+            },
+          },
+          Object {
+            "in": "query",
+            "name": "c",
+            "schema": Object {
+              "$ref": "#/definitions/Model",
+            },
+          },
+          Object {
+            "default": 10,
+            "description": "Parameter b",
+            "in": "query",
+            "name": "b",
+            "type": "number",
+          },
+          Object {
+            "in": "query",
+            "name": "a",
+            "type": "string",
+          },
+        ],
+        "produces": Array [
+          "application/json",
+        ],
+        "responses": Object {
+          "200": Object {
+            "description": "Response description",
+            "schema": Object {
+              "$ref": "#/definitions/Model",
+            },
+          },
+        },
+      },
+    },
+  },
+  "produces": Array [
+    "application/json",
+  ],
+  "swagger": "2.0",
+}
+`;
