@@ -11,19 +11,34 @@
     "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
     "test": "npm run lint && npm run clean && jest -c ./jest.json",
     "test:watch": "npm run clean && jest -c ./jest.json --watch",
-    "typedoc": "del-cli ./docs && typedoc --ignoreCompilerErrors --out ./docs --mode file --tsconfig ./config/tsconfig.build.json ./src/"
+    "typedoc": "del-cli ./docs && typedoc --ignoreCompilerErrors --out ./docs --mode file --tsconfig ./config/tsconfig.build.json ./src/",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
-  "keywords": [],
+  "keywords": [
+    "giuseppe",
+    "plugin",
+    "express",
+    "swagger",
+    "@SwaggerDocs",
+    "@SwaggerField",
+    "@SwaggerObject",
+    "@SwaggerParam",
+    "@SwaggerRoute"
+  ],
   "repository": {
     "type": "git",
-    "url": "GIT URL"
+    "url": "https://github.com/smartive/giuseppe-swagger-plugin.git"
   },
   "engines": {
     "node": ">=7",
     "npm": "*"
   },
   "author": "Nicola Marcacci Rossi <nicolamr@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smartive/giuseppe-reqres-plugin/issues"
+  },
+  "homepage": "https://smartive.github.io/giuseppe-reqres-plugin/",
   "dependencies": {
     "giuseppe": "^2.0.2"
   },

@@ -24,6 +24,7 @@ tslint.json
 !*.d.ts
 *.js.map
 
+
 # Testfiles
 jest.json
 test/
@@ -32,3 +33,10 @@ test/
 # Documentation
 docs/
 
+prepare-release.js
+jest.json
+package-lock.json
+.travis.yml
+tsconfig.json
+tslint.json
+config/
