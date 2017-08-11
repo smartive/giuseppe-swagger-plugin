@@ -150,7 +150,7 @@ export interface SwaggerParameterData {
     deprecated?: boolean;
     minimum?: number;
     maximum?: number;
-    enum: any[];
+    enum?: any[];
 }
 
 export interface SwaggerObjectData {
