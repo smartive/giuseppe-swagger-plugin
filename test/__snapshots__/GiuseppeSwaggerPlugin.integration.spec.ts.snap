@@ -186,6 +186,24 @@ Object {
         },
       },
     },
+    "/{id}": Object {
+      "get": Object {
+        "description": "Another route",
+        "parameters": Array [
+          Object {
+            "description": "id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string",
+          },
+        ],
+        "produces": Array [
+          "application/json",
+        ],
+        "responses": Object {},
+      },
+    },
   },
   "produces": Array [
     "application/json",

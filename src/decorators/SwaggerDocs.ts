@@ -60,8 +60,18 @@ function getParameterLocation(param: ParameterDefinition): ParameterLocation {
     }
 }
 
-function preSlash(str: string): string {
-    return str ? `${/^\//.test(str) ? '' : '/'}${str}` : '';
+function routeComponent(str: string): string {
+    if (!str) {
+        return '';
+    }
+
+    let component = str[0] === '/' ? str.substr(1) : str;
+
+    if (component[0] === ':') {
+        component = `{${component.substr(1)}}`;
+    }
+
+    return `/${component}`;
 }
 
 const PRIMITIVE_TYPES: Function[] = [String, Boolean, Number];
@@ -107,7 +117,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
                     continue;
                 }
 
-                const url = `${preSlash(giuseppeApiController.routePrefix)}${preSlash(route.route)}`;
+                const url = `${routeComponent(giuseppeApiController.routePrefix)}${routeComponent(route.route)}`;
                 const methodName = HttpMethod[route.httpMethod];
 
                 if (!paths[url]) {

@@ -4,7 +4,7 @@ import { SwaggerRoute } from '../src/decorators/SwaggerRoute';
 import { SwaggerObject } from '../src/decorators/SwaggerObject';
 import { GiuseppeSwaggerPlugin } from '../src/GiuseppeSwaggerPlugin';
 import { SwaggerDocs } from '../src/decorators/SwaggerDocs';
-import { Controller, Get, Giuseppe, Header, Query } from 'giuseppe';
+import { Controller, Get, Giuseppe, Header, Query, UrlParam } from 'giuseppe';
 import { get } from 'request-promise';
 
 describe('GiuseppeSwaggerPlugin <integration test>', () => {
@@ -170,6 +170,21 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
                 g: string
             ): Model {
                 return new Model();
+            }
+
+            @SwaggerRoute({
+                description: 'Another route',
+                responses: {},
+            })
+            @Get(':id')
+            getOther(
+                @SwaggerParam({
+                    description: 'id',
+                })
+                @UrlParam('id')
+                id: string,
+            ): number {
+                return 1;
             }
         }
 
