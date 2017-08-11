@@ -14,7 +14,7 @@ This is a plugin for [giuseppe](http://giuseppe.smartive.ch).
 
 To install this package, simply run
 
-[![NPM](https://nodei.co/npm/giuseppe-swagger-plugin.png?downloads=true&stars=true)](https://nodei.co/npm/giuseppe-swagger-plugin/)
+[![NPM](https://nodei.co/npm/@smartive/giuseppe-swagger-plugin.png?downloads=true&stars=true)](https://nodei.co/npm/@smartive/giuseppe-swagger-plugin/)
 
 ## How to use
 
