@@ -1,3 +1,4 @@
+import { buildLeafSchema, getPrimitiveType, registerType } from '../utils/schema';
 import { ControllerMetadata, Giuseppe, HttpMethod, ParameterDefinition } from 'giuseppe';
 import { GiuseppeApiController } from 'giuseppe/core/controller/GiuseppeApiController';
 import { GiuseppeBodyParameter } from 'giuseppe/core/parameters/Body';
@@ -9,23 +10,17 @@ import { FunctionMethodDecorator, GiuseppeBaseRoute } from 'giuseppe/core/routes
 
 import {
   Handler,
-  JsonSchema,
-  JsonSchemaArray,
   JsonSchemaObjects,
   JsonSchemaRef,
   Parameter,
   ParameterLocation,
-  ParameterType,
   Response as JsonResponse,
   Responses,
   SwaggerDoc,
-  SwaggerFieldData,
-  SwaggerObjectData,
   SwaggerParameterData,
   SwaggerRouteData,
   SwaggerRouteResponses,
 } from '../models/SwaggerDoc';
-import { getMetadata } from '../utils/metadata';
 
 export interface SwaggerDocsOptions {
     info: {
@@ -74,16 +69,7 @@ function routeComponent(str: string): string {
     return `/${component}`;
 }
 
-const PRIMITIVE_TYPES: Function[] = [String, Boolean, Number];
-
-function getPrimitiveType(type: Function): ParameterType | undefined {
-    if (PRIMITIVE_TYPES.indexOf(type) > -1) {
-        return type.name.toLowerCase() as ParameterType;
-    }
-}
-
 export class SwaggerDocsRoute extends GiuseppeBaseRoute {
-
     private swagger: SwaggerDoc;
 
     constructor(route: string = '', private options: SwaggerDocsOptions) {
@@ -148,7 +134,6 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
         data: SwaggerRouteData,
         parameterDefinitions: ParameterDefinition[],
     ): Handler {
-
         const handler: Handler = {
             description: data.description,
             responses: this.buildResponses(definitions, data.responses),
@@ -173,116 +158,13 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
                     $ref: `#/definitions/${responseDefinition.type.name}`,
                 };
 
-                this.registerType(definitions, responseDefinition.type);
+                registerType(definitions, responseDefinition.type);
             }
 
             responses[code] = response;
         }
 
         return responses;
-    }
-
-    private registerType(definitions: JsonSchemaObjects, type: Function): void {
-        if (definitions[type.name] || getPrimitiveType(type)) {
-            return;
-        }
-
-        const toRegister: Function[] = [];
-        const definition = {
-            id: type.name,
-        } as any;
-
-        const objectData: SwaggerObjectData = getMetadata(type.prototype);
-        if (objectData) {
-            definition.description = objectData.description;
-
-            if (objectData.oneOf) {
-                definition.oneOf = objectData.oneOf.map(type => ({
-                    $ref: `#/definitions/${type.name}`,
-                }));
-
-                objectData.oneOf.forEach(type => toRegister.push(type));
-            } else {
-                definition.type = 'object';
-
-                if (objectData.additionalPropertiesType) {
-                    definition.additionalProperties = {
-                        $ref: `#/definitions/${objectData.additionalPropertiesType.name}`,
-                    };
-                    toRegister.push(objectData.additionalPropertiesType);
-                }
-
-                if (objectData.fields && Object.keys(objectData.fields).length) {
-                    definition.properties = {};
-
-                    for (const name of Object.keys(objectData.fields)) {
-
-                        const field = objectData.fields[name];
-
-                        definition.properties[name] = this.buildField(name, field, type);
-
-                        if (field.type) {
-                            toRegister.push(field.type);
-                        }
-
-                        if (field.required) {
-                            if (!definition.required) {
-                                definition.required = [];
-                            }
-                            definition.required.push(name);
-                        }
-                    }
-                }
-            }
-
-        }
-
-        definitions[type.name] = definition;
-
-        toRegister.forEach(type => this.registerType(definitions, type));
-    }
-
-    private buildField(name: string, field: SwaggerFieldData, objectType: Function): JsonSchema {
-        if (field.schema) {
-            return field.schema;
-        }
-
-        const baseType: Function = Reflect.getMetadata('design:type', objectType.prototype, name);
-        const primitiveType = getPrimitiveType(baseType);
-        if (primitiveType) {
-            return {
-                type: primitiveType,
-            } as any;
-        }
-
-        if (field.type) {
-            return this.buildTypeSchema(baseType, field.type);
-        }
-
-        throw new Error('Invalid field.');
-    }
-
-    private buildTypeSchema(baseType: Function, type: Function): JsonSchemaArray | JsonSchemaRef {
-        const primitiveType = getPrimitiveType(type);
-        let leafSchema;
-        if (primitiveType) {
-            leafSchema = {
-                type: primitiveType,
-            };
-        } else {
-            leafSchema = {
-                $ref: `#/definitions/${type.name}`,
-            };
-        }
-
-        if (baseType === Array) {
-            return {
-                type: 'array',
-                items: leafSchema,
-            };
-        }
-
-        return leafSchema;
     }
 
     private buildParameters(definitions: JsonSchemaObjects, parameterDefinitions: ParameterDefinition[]): Parameter[] {
@@ -322,12 +204,19 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
             param.enum = swaggerParamData.enum;
 
             if (swaggerParamData.type) {
-                param.schema = this.buildTypeSchema(parameter.type, swaggerParamData.type);
-                this.registerType(definitions, swaggerParamData.type);
+                const leafSchema = buildLeafSchema(swaggerParamData.type);
+
+                if (parameter.type === Array) {
+                    param.type = 'array';
+                    param.items = leafSchema.schema;
+                } else {
+                    param.schema = leafSchema.schema as JsonSchemaRef;
+                }
+
+                leafSchema.toRegister.map(type => registerType(definitions, type));
             }
         }
 
         return param;
     }
 }
-

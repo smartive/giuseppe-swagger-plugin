@@ -17,3 +17,7 @@ build
 coverage
 
 package-lock.json
+
+# Generated files
+*.js
+*.d.ts

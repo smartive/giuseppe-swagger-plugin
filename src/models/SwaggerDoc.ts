@@ -24,11 +24,12 @@ export interface Parameter {
     in: ParameterLocation;
     required?: boolean;
     type?: ParameterType;
+    items?: JsonSchema;
     enum?: string[];
     default?: string | number;
     minimum?: number;
     maximum?: number;
-    schema?: JsonSchemaArray | JsonSchemaRef;
+    schema?: JsonSchemaRef;
 }
 
 export interface Handler {
@@ -38,7 +39,7 @@ export interface Handler {
     responses: Responses;
 }
 
-export type ParameterType = 'string' | 'boolean' | 'number';
+export type ParameterType = 'string' | 'boolean' | 'number' | 'array';
 
 export type ParameterLocation = 'query' | 'header' | 'path' | 'cookie';
 
@@ -155,15 +156,26 @@ export interface SwaggerParameterData {
 
 export interface SwaggerObjectData {
     description?: string;
-    fields?: {
+    fields: {
         [name: string]: SwaggerFieldData;
     };
     additionalPropertiesType?: Function;
+    additionalProperties?: boolean;
     oneOf?: Function[];
 }
 
 export interface SwaggerFieldData {
     schema?: JsonSchema;
     type?: Function;
+    types?: (Function|[Function])[];
     required?: boolean;
+    enum?: string[] | number[];
+    nullable?: boolean;
+    pattern?: RegExp;
+    minLength?: number;
+    maxLength?: number;
+    minimum?: number;
+    maximum?: number;
+    multipleOf?: number;
+    uniqueItems?: boolean;
 }
