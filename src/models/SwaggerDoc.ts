@@ -67,7 +67,7 @@ export interface Response {
 }
 
 export interface JsonSchemaObjects {
-    [name: string]: JsonSchemaObject | JsonSchemaObjects;
+    [name: string]: string | JsonSchemaObject | JsonSchemaObjects;
 }
 
 export type JsonSchema =
@@ -78,6 +78,7 @@ export type JsonSchema =
     JsonSchemaNumber |
     JsonSchemaArray |
     JsonSchemaOneOf |
+    JsonSchemaAnyOf |
     JsonSchemaEnum |
     JsonSchemaObject;
 
@@ -139,6 +140,11 @@ export interface JsonSchemaOneOf {
     oneOf: any[];
 }
 
+export interface JsonSchemaAnyOf {
+    description?: string;
+    anyOf: any[];
+}
+
 export interface JsonSchemaEnum {
     description?: string;
     enum: string[] | number[];
@@ -156,10 +162,11 @@ export interface SwaggerParameterData {
 
 export interface SwaggerObjectData {
     description?: string;
-    fields: {
+    fields?: {
         [name: string]: SwaggerFieldData;
     };
     additionalPropertiesType?: Function;
+    nullable?: boolean;
     additionalProperties?: boolean;
     oneOf?: Function[];
 }

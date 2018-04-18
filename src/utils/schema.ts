@@ -44,7 +44,7 @@ export function buildLeafSchema(type: Function|[Function]): { schema: JsonSchema
 
     return {
         schema: {
-            $ref: `#/definitions/${type.name}`,
+            $ref: `#${type.name}`,
         },
         toRegister: [type],
     };
@@ -99,7 +99,7 @@ export function registerType(definitions: JsonSchemaObjects, type: Function): vo
 
     const typesToRegister: Function[] = [];
     const definition = {
-        id: type.name,
+        id: `#${type.name}`,
     } as any;
 
     const objectData: SwaggerObjectData = getMetadata(type.prototype);
@@ -108,16 +108,18 @@ export function registerType(definitions: JsonSchemaObjects, type: Function): vo
 
         if (objectData.oneOf) {
             definition.oneOf = objectData.oneOf.map(type => ({
-                $ref: `#/definitions/${type.name}`,
+                $ref: `#${type.name}`,
             }));
 
             objectData.oneOf.forEach(type => typesToRegister.push(type));
         } else {
-            definition.type = 'object';
+            if (objectData.nullable) {
+                definition.type = ['null', 'object'];
+            }
 
             if (objectData.additionalPropertiesType) {
                 definition.additionalProperties = {
-                    $ref: `#/definitions/${objectData.additionalPropertiesType.name}`,
+                    $ref: `#${objectData.additionalPropertiesType.name}`,
                 };
                 typesToRegister.push(objectData.additionalPropertiesType);
             }
@@ -185,7 +187,7 @@ export function buildField(
 
             return {
                 schema: {
-                    oneOf: schemas.map(schema => schema.schema),
+                    anyOf: schemas.map(schema => schema.schema),
                 },
                 toRegister: schemas.map(schema => schema.toRegister)
                     .reduce((flat, arr) => (flat.push(...arr), flat), []),
@@ -230,7 +232,10 @@ export function buildField(
 }
 
 export function buildDefinitions(type: Function): JsonSchemaObjects {
-    const schema = {};
+    const schema = {
+        $schema: 'http://json-schema.org/draft-04/schema#',
+        id: 'schema',
+    };
     registerType(schema, type);
     return schema;
 }
