@@ -5,6 +5,9 @@ import { SwaggerFieldData } from '../models/SwaggerDoc';
 export function SwaggerField(data: SwaggerFieldData = {}): PropertyDecorator {
     return (target: Object, name: string) => {
         const objectData = getOrDefineMetadata(target);
+        if (!objectData.fields) {
+            objectData.fields = {};
+        }
         objectData.fields[name] = data;
     };
 }

@@ -192,7 +192,7 @@ export function buildField(
 
             return {
                 schema: {
-                    anyOf: types,
+                    oneOf: types,
                 },
                 toRegister: schemas.map(schema => schema.toRegister)
                     .reduce((flat, arr) => (flat.push(...arr), flat), []),
