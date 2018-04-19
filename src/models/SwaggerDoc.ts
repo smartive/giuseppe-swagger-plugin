@@ -185,4 +185,5 @@ export interface SwaggerFieldData {
     maximum?: number;
     multipleOf?: number;
     uniqueItems?: boolean;
+    items?: SwaggerFieldData;
 }

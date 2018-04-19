@@ -184,13 +184,30 @@ export function buildField(
 
         if (field.types) {
             const schemas = field.types.map(buildLeafSchema);
+            let types = schemas.map(schema => schema.schema);
+
+            if (field.nullable) {
+                types = [{ type: 'null' }, ...types];
+            }
 
             return {
                 schema: {
-                    anyOf: schemas.map(schema => schema.schema),
+                    anyOf: types,
                 },
                 toRegister: schemas.map(schema => schema.toRegister)
                     .reduce((flat, arr) => (flat.push(...arr), flat), []),
+            };
+        }
+
+        if (field.items) {
+            const itemsBuild = buildField(name, field.items, objectType);
+            return {
+                schema: {
+                    type: 'array',
+                    items: itemsBuild.schema,
+                    uniqueItems: field.uniqueItems,
+                },
+                toRegister: itemsBuild.toRegister,
             };
         }
 
