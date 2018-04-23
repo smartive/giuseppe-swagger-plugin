@@ -151,7 +151,7 @@ export interface JsonSchemaEnum {
 }
 
 export interface SwaggerParameterData {
-    description: string;
+    description?: string;
     default?: any;
     type?: Function;
     deprecated?: boolean;

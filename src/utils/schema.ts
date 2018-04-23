@@ -21,9 +21,9 @@ function patternToString(pattern: RegExp): string {
     return str.substring(1, str.length - 1);
 }
 
-export function buildLeafSchema(type: Function|[Function]): { schema: JsonSchema, toRegister: Function[] } {
+export function buildLeafSchema(type: Function|[Function], path: string): { schema: JsonSchema, toRegister: Function[] } {
     if (type instanceof Array) {
-        const schema = buildLeafSchema(type[0]);
+        const schema = buildLeafSchema(type[0], path);
         return {
             schema: {
                 type: 'array',
@@ -44,18 +44,19 @@ export function buildLeafSchema(type: Function|[Function]): { schema: JsonSchema
 
     return {
         schema: {
-            $ref: `#${type.name}`,
+            $ref: path ? `#${path}/${type.name}` : type.name,
         },
         toRegister: [type],
     };
 }
 
 export function buildTypeSchema(
+    path: string,
     field: SwaggerFieldData,
     baseType: Function,
     type?: Function,
 ): { schema: JsonSchema, toRegister: Function[] } {
-    const leafSchema = type ? buildLeafSchema(type) : buildLeafSchema(baseType);
+    const leafSchema = type ? buildLeafSchema(type, path) : buildLeafSchema(baseType, path);
 
     if (baseType === Array) {
         if (!type) {
@@ -92,14 +93,14 @@ export function buildTypeSchema(
     return leafSchema;
 }
 
-export function registerType(definitions: JsonSchemaObjects, type: Function): void {
+export function registerType(definitions: JsonSchemaObjects, type: Function, path: string): void {
     if (definitions[type.name] || getPrimitiveType(type)) {
         return;
     }
 
     const typesToRegister: Function[] = [];
     const definition = {
-        id: `#${type.name}`,
+        id: path ? type.name : `#${type.name}`,
     } as any;
 
     const objectData: SwaggerObjectData = getMetadata(type.prototype);
@@ -108,18 +109,21 @@ export function registerType(definitions: JsonSchemaObjects, type: Function): vo
 
         if (objectData.oneOf) {
             definition.oneOf = objectData.oneOf.map(type => ({
-                $ref: `#${type.name}`,
+                $ref: path ? `#${path}/${type.name}` : type.name,
             }));
 
             objectData.oneOf.forEach(type => typesToRegister.push(type));
         } else {
             if (objectData.nullable) {
                 definition.type = ['null', 'object'];
+            } else {
+                definition.type = 'object';
             }
 
             if (objectData.additionalPropertiesType) {
                 definition.additionalProperties = {
-                    $ref: `#${objectData.additionalPropertiesType.name}`,
+                    $ref: path
+                        ? `#${path}/${objectData.additionalPropertiesType.name}` : objectData.additionalPropertiesType.name,
                 };
                 typesToRegister.push(objectData.additionalPropertiesType);
             }
@@ -131,7 +135,7 @@ export function registerType(definitions: JsonSchemaObjects, type: Function): vo
 
                     const field = objectData.fields[name];
 
-                    const { schema, toRegister } = buildField(name, field, type);
+                    const { schema, toRegister } = buildField(name, field, type, path);
                     definition.properties[name] = schema;
 
                     if (toRegister) {
@@ -156,13 +160,14 @@ export function registerType(definitions: JsonSchemaObjects, type: Function): vo
 
     definitions[type.name] = definition;
 
-    typesToRegister.forEach(type => registerType(definitions, type));
+    typesToRegister.forEach(type => registerType(definitions, type, path));
 }
 
 export function buildField(
     name: string,
     field: SwaggerFieldData,
     objectType: Function,
+    path: string,
 ): {
     schema: JsonSchema,
     toRegister?: Function[],
@@ -183,7 +188,7 @@ export function buildField(
         }
 
         if (field.types) {
-            const schemas = field.types.map(buildLeafSchema);
+            const schemas = field.types.map(type => buildLeafSchema(type, path));
             let types = schemas.map(schema => schema.schema);
 
             if (field.nullable) {
@@ -200,7 +205,7 @@ export function buildField(
         }
 
         if (field.items) {
-            const itemsBuild = buildField(name, field.items, objectType);
+            const itemsBuild = buildField(name, field.items, objectType, path);
             return {
                 schema: {
                     type: 'array',
@@ -213,7 +218,7 @@ export function buildField(
 
         const baseType: Function = Reflect.getMetadata('design:type', objectType.prototype, name);
         if (field.type) {
-            return buildTypeSchema(field, baseType, field.type);
+            return buildTypeSchema(path, field, baseType, field.type);
         }
 
         const primitiveType = getPrimitiveType(baseType);
@@ -242,7 +247,7 @@ export function buildField(
             };
         }
 
-        return buildTypeSchema(field, baseType);
+        return buildTypeSchema(path, field, baseType);
     } catch (e) {
         throw new Error(`Error in ${name}: ${e.message}`);
     }
@@ -253,6 +258,6 @@ export function buildDefinitions(type: Function): JsonSchemaObjects {
         $schema: 'http://json-schema.org/draft-04/schema#',
         id: 'schema',
     };
-    registerType(schema, type);
+    registerType(schema, type, '');
     return schema;
 }

@@ -67,8 +67,8 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
 
             @SwaggerField({
                 schema: {
-                    oneOf: ['a', 'b']
-                }
+                    oneOf: ['a', 'b'],
+                },
             })
             y: string;
         }
@@ -96,24 +96,24 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
             c: Model;
 
             @SwaggerField({
-                type: Number
+                type: Number,
             })
             d: number[];
 
             @SwaggerField({
-                type: Other
+                type: Other,
             })
             e: Other[];
 
             @SwaggerField({
-                type: OneOf
+                type: OneOf,
             })
             oneOf: OneOf;
 
             @SwaggerField({
-                type: AdditionalProperties
+                type: AdditionalProperties,
             })
-            additionalProperties: AdditionalProperties
+            additionalProperties: AdditionalProperties;
         }
 
         @Controller()
@@ -137,25 +137,25 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
                     description: 'Parameter b',
                     deprecated: true,
                     minimum: 0,
-                    maximum: 10
+                    maximum: 10,
                 })
                 @Query('b')
                 b: number,
 
                 @SwaggerParam({
-                    type: Model
+                    type: Model,
                 })
                 @Query('c')
                 c: Model,
 
                 @SwaggerParam({
-                    type: Number
+                    type: Number,
                 })
                 @Query('d')
                 d: number[],
 
                 @SwaggerParam({
-                    type: Model
+                    type: Model,
                 })
                 @Query('e')
                 e: Model[],
@@ -167,7 +167,7 @@ describe('GiuseppeSwaggerPlugin <integration test>', () => {
                     enum: ['a', 'b', 'c'],
                 })
                 @Query('othername')
-                g: string
+                g: string,
             ): Model {
                 return new Model();
             }

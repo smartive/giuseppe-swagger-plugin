@@ -22,6 +22,8 @@ import {
   SwaggerRouteResponses,
 } from '../models/SwaggerDoc';
 
+const PATH = '/definitions';
+
 export interface SwaggerDocsOptions {
     info: {
         title: string;
@@ -42,17 +44,25 @@ export function SwaggerDocs(route: string, options: SwaggerDocsOptions): Functio
 function getParameterLocation(param: ParameterDefinition): ParameterLocation {
     if (param as any instanceof GiuseppeBodyParameter) {
         return 'query';
-    } else if (param as any instanceof GiuseppeQueryParameter) {
-        return 'query';
-    } else if (param as any instanceof GiuseppeCookieParameter) {
-        return 'cookie';
-    } else if (param as any instanceof GiuseppeHeaderParameter) {
-        return 'header';
-    } else if (param as any instanceof GiuseppeUrlParameter) {
-        return 'path';
-    } else {
-        throw new Error(`Unknown parameter location: ${param.constructor.name}`);
     }
+
+    if (param as any instanceof GiuseppeQueryParameter) {
+        return 'query';
+    }
+
+    if (param as any instanceof GiuseppeCookieParameter) {
+        return 'cookie';
+    }
+
+    if (param as any instanceof GiuseppeHeaderParameter) {
+        return 'header';
+    }
+
+    if (param as any instanceof GiuseppeUrlParameter) {
+        return 'path';
+    }
+
+    throw new Error(`Unknown parameter location: ${param.constructor.name}`);
 }
 
 function routeComponent(str: string): string {
@@ -155,10 +165,10 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
 
             if (responseDefinition.type) {
                 response.schema = {
-                    $ref: `#/definitions/${responseDefinition.type.name}`,
+                    $ref: `#${PATH}/${responseDefinition.type.name}`,
                 };
 
-                registerType(definitions, responseDefinition.type);
+                registerType(definitions, responseDefinition.type, PATH);
             }
 
             responses[code] = response;
@@ -204,7 +214,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
             param.enum = swaggerParamData.enum;
 
             if (swaggerParamData.type) {
-                const leafSchema = buildLeafSchema(swaggerParamData.type);
+                const leafSchema = buildLeafSchema(swaggerParamData.type, PATH);
 
                 if (parameter.type === Array) {
                     param.type = 'array';
@@ -213,7 +223,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
                     param.schema = leafSchema.schema as JsonSchemaRef;
                 }
 
-                leafSchema.toRegister.map(type => registerType(definitions, type));
+                leafSchema.toRegister.map(type => registerType(definitions, type, PATH));
             }
         }
 

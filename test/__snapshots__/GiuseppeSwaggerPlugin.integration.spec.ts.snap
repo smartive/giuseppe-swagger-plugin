@@ -132,23 +132,19 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "e",
-            "schema": Object {
-              "items": Object {
-                "$ref": "#/definitions/Model",
-              },
-              "type": "array",
+            "items": Object {
+              "$ref": "#/definitions/Model",
             },
+            "name": "e",
+            "type": "array",
           },
           Object {
             "in": "query",
-            "name": "d",
-            "schema": Object {
-              "items": Object {
-                "type": "number",
-              },
-              "type": "array",
+            "items": Object {
+              "type": "number",
             },
+            "name": "d",
+            "type": "array",
           },
           Object {
             "in": "query",
