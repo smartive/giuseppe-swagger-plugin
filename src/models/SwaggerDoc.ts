@@ -67,7 +67,7 @@ export interface Response {
 }
 
 export interface JsonSchemaObjects {
-    [name: string]: string | JsonSchemaObject | JsonSchemaObjects;
+    [name: string]: JsonSchemaObject | JsonSchemaObjects;
 }
 
 export type JsonSchema =
@@ -174,7 +174,7 @@ export interface SwaggerObjectData {
 export interface SwaggerFieldData {
     schema?: JsonSchema;
     type?: Function;
-    types?: (Function|[Function])[];
+    types?: (JsonSchema|Function|[Function])[];
     required?: boolean;
     enum?: string[] | number[];
     nullable?: boolean;

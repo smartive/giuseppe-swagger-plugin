@@ -168,7 +168,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
                     $ref: `#${PATH}/${responseDefinition.type.name}`,
                 };
 
-                registerType(definitions, responseDefinition.type, PATH);
+                registerType(definitions, responseDefinition.type, PATH, true);
             }
 
             responses[code] = response;
@@ -223,7 +223,7 @@ export class SwaggerDocsRoute extends GiuseppeBaseRoute {
                     param.schema = leafSchema.schema as JsonSchemaRef;
                 }
 
-                leafSchema.toRegister.map(type => registerType(definitions, type, PATH));
+                leafSchema.toRegister.map(type => registerType(definitions, type, PATH, true));
             }
         }
 

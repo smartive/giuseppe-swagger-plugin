@@ -21,7 +21,17 @@ function patternToString(pattern: RegExp): string {
     return str.substring(1, str.length - 1);
 }
 
-export function buildLeafSchema(type: Function|[Function], path: string): { schema: JsonSchema, toRegister: Function[] } {
+export function buildLeafSchema(
+    type: JsonSchema|Function|[Function],
+    path: string,
+): { schema: JsonSchema, toRegister: Function[] } {
+    if (typeof type === 'object') {
+        return {
+            schema: type as JsonSchema,
+            toRegister: [],
+        };
+    }
+
     if (type instanceof Array) {
         const schema = buildLeafSchema(type[0], path);
         return {
@@ -93,7 +103,7 @@ export function buildTypeSchema(
     return leafSchema;
 }
 
-export function registerType(definitions: JsonSchemaObjects, type: Function, path: string): void {
+export function registerType(definitions: JsonSchemaObjects, type: Function, path: string, swagger2: boolean = false): void {
     if (definitions[type.name] || getPrimitiveType(type)) {
         return;
     }
@@ -108,11 +118,16 @@ export function registerType(definitions: JsonSchemaObjects, type: Function, pat
         definition.description = objectData.description;
 
         if (objectData.oneOf) {
-            definition.oneOf = objectData.oneOf.map(type => ({
-                $ref: path ? `#${path}/${type.name}` : type.name,
-            }));
-
-            objectData.oneOf.forEach(type => typesToRegister.push(type));
+            if (swagger2) {
+                const type = objectData.oneOf[objectData.oneOf.length - 1];
+                definition.$ref = path ? `#${path}/${type.name}` : type.name;
+                typesToRegister.push(type);
+            } else {
+                definition.oneOf = objectData.oneOf.map(type => ({
+                    $ref: path ? `#${path}/${type.name}` : type.name,
+                }));
+                objectData.oneOf.forEach(type => typesToRegister.push(type));
+            }
         } else {
             if (objectData.nullable) {
                 definition.type = ['null', 'object'];
@@ -135,7 +150,7 @@ export function registerType(definitions: JsonSchemaObjects, type: Function, pat
 
                     const field = objectData.fields[name];
 
-                    const { schema, toRegister } = buildField(name, field, type, path);
+                    const { schema, toRegister } = buildField(name, field, type, path, swagger2);
                     definition.properties[name] = schema;
 
                     if (toRegister) {
@@ -160,7 +175,36 @@ export function registerType(definitions: JsonSchemaObjects, type: Function, pat
 
     definitions[type.name] = definition;
 
-    typesToRegister.forEach(type => registerType(definitions, type, path));
+    typesToRegister.forEach(type => registerType(definitions, type, path, swagger2));
+}
+
+function transformSchemaToSwagger2(schema: any): JsonSchema {
+    if (typeof schema !== 'object') {
+        return schema;
+    }
+
+    if (schema.oneOf) {
+        if (schema.oneOf.every(item => item.pattern)) {
+            return {
+                type: 'string',
+                pattern: schema.oneOf.map(item => `(${item.pattern})`).join('|'),
+            };
+        }
+
+        return transformSchemaToSwagger2(schema.oneOf[schema.oneOf.length - 1]);
+    }
+
+    const newSchema = { ...schema };
+
+    if (newSchema.items) {
+        newSchema.items = transformSchemaToSwagger2(newSchema.items);
+    }
+
+    if (newSchema.additionalProperties) {
+        newSchema.additionalProperties = transformSchemaToSwagger2(newSchema.additionalProperties);
+    }
+
+    return newSchema;
 }
 
 export function buildField(
@@ -168,12 +212,18 @@ export function buildField(
     field: SwaggerFieldData,
     objectType: Function,
     path: string,
+    swagger2: boolean = false,
 ): {
     schema: JsonSchema,
     toRegister?: Function[],
 } {
     try {
         if (field.schema) {
+            if (swagger2) {
+                return {
+                    schema: transformSchemaToSwagger2(field.schema),
+                };
+            }
             return {
                 schema: field.schema,
             };
@@ -188,6 +238,10 @@ export function buildField(
         }
 
         if (field.types) {
+            if (swagger2) {
+                return buildLeafSchema(field.types[field.types.length - 1], path);
+            }
+
             const schemas = field.types.map(type => buildLeafSchema(type, path));
             let types = schemas.map(schema => schema.schema);
 
@@ -205,7 +259,7 @@ export function buildField(
         }
 
         if (field.items) {
-            const itemsBuild = buildField(name, field.items, objectType, path);
+            const itemsBuild = buildField(name, field.items, objectType, path, swagger2);
             return {
                 schema: {
                     type: 'array',
@@ -229,13 +283,16 @@ export function buildField(
             if (field.pattern) {
                 schema.pattern = patternToString(field.pattern);
             }
-            if (field.minLength) {
+            if (field.minLength !== undefined) {
                 schema.minLength = field.minLength;
             }
-            if (field.maxLength) {
+            if (field.maxLength !== undefined) {
                 schema.maxLength = field.maxLength;
             }
-            if (field.maximum) {
+            if (field.minimum !== undefined) {
+                schema.minimum = field.minimum;
+            }
+            if (field.maximum !== undefined) {
                 schema.maximum = field.maximum;
             }
             if (field.nullable) {
@@ -253,11 +310,16 @@ export function buildField(
     }
 }
 
-export function buildDefinitions(type: Function): JsonSchemaObjects {
+export function buildDefinitions(type: Function, swagger2: boolean = false): JsonSchemaObjects {
     const schema = {
-        $schema: 'http://json-schema.org/draft-04/schema#',
-        id: 'schema',
     };
-    registerType(schema, type, '');
+    registerType(schema, type, '', swagger2);
+    return schema;
+}
+
+export function buildSchema(type: Function, swagger2: boolean = false): JsonSchemaObjects {
+    const schema = buildDefinitions(type, swagger2);
+    (schema as any).$schema = 'http://json-schema.org/draft-04/schema#';
+    (schema as any).id = 'schema';
     return schema;
 }
