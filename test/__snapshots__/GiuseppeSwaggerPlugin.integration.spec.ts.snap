@@ -6,15 +6,6 @@ Object {
     "application/json",
   ],
   "definitions": Object {
-    "A": Object {
-      "id": "A",
-      "properties": Object {
-        "x": Object {
-          "type": "string",
-        },
-      },
-      "type": "object",
-    },
     "AdditionalProperties": Object {
       "additionalProperties": Object {
         "$ref": "#/definitions/C",
@@ -34,12 +25,7 @@ Object {
     "C": Object {
       "id": "C",
       "properties": Object {
-        "y": Object {
-          "oneOf": Array [
-            "a",
-            "b",
-          ],
-        },
+        "y": "b",
         "z": Object {
           "type": "string",
         },
@@ -84,15 +70,8 @@ Object {
       "type": "object",
     },
     "OneOf": Object {
+      "$ref": "#/definitions/B",
       "id": "OneOf",
-      "oneOf": Array [
-        Object {
-          "$ref": "#/definitions/A",
-        },
-        Object {
-          "$ref": "#/definitions/B",
-        },
-      ],
     },
     "Other": Object {
       "description": "Another model",
@@ -132,23 +111,19 @@ Object {
           },
           Object {
             "in": "query",
-            "name": "e",
-            "schema": Object {
-              "items": Object {
-                "$ref": "#/definitions/Model",
-              },
-              "type": "array",
+            "items": Object {
+              "$ref": "#/definitions/Model",
             },
+            "name": "e",
+            "type": "array",
           },
           Object {
             "in": "query",
-            "name": "d",
-            "schema": Object {
-              "items": Object {
-                "type": "number",
-              },
-              "type": "array",
+            "items": Object {
+              "type": "number",
             },
+            "name": "d",
+            "type": "array",
           },
           Object {
             "in": "query",

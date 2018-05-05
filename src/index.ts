@@ -5,3 +5,4 @@ export * from './decorators/SwaggerObject';
 export * from './decorators/SwaggerParam';
 export * from './decorators/SwaggerRoute';
 export * from './models/SwaggerDoc';
+export { buildDefinitions } from './utils/schema';
