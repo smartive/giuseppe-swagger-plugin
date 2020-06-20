@@ -11,8 +11,7 @@
     "lint": "tslint -c ./tslint.json -p ./config/tsconfig.build.json",
     "test": "npm run lint && npm run clean && jest -c ./jest.json",
     "test:watch": "npm run clean && jest -c ./jest.json --watch",
-    "typedoc": "del-cli ./docs && typedoc --ignoreCompilerErrors --out ./docs --mode file --tsconfig ./config/tsconfig.build.json ./src/",
-    "semantic-release": "semantic-release pre && npm publish --access public && semantic-release post"
+    "typedoc": "del-cli ./docs && typedoc --ignoreCompilerErrors --out ./docs --mode file --tsconfig ./config/tsconfig.build.json ./src/"
   },
   "keywords": [
     "giuseppe",
@@ -49,7 +48,7 @@
     "del-cli": "^1.1.0",
     "jest": "^20.0.4",
     "request-promise": "^4.2.1",
-    "semantic-release": "^6.3.6",
+    "semantic-release": "^17.0.8",
     "ts-jest": "^20.0.7",
     "tslint": "^5.5.0",
     "tsutils": "^2.8.0",
